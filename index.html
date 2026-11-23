@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>海内外游戏品类趋势 · 框架</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#f4f6f8;--card:#fff;--bd:#e3e8ee;--tx:#1f2937;--mut:#6b7280;}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;}
+.wrap{max-width:1240px;margin:0 auto;padding:24px 18px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.topbar h1{font-size:22px;margin:0;}
+.topbar .sub{color:var(--mut);font-size:13px;margin-top:3px;}
+.badge{background:#fef3c7;color:#b45309;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;border:1px solid #fcd34d;}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;}
+.tab{padding:8px 18px;border-radius:20px;border:1px solid var(--bd);background:#fff;cursor:pointer;font-size:13.5px;font-weight:600;color:#374151;transition:.15s;}
+.tab:hover{border-color:#c7d2fe;}
+.tab.active{background:#4338ca;color:#fff;border-color:#4338ca;}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px 20px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-size:17px;margin:0 0 2px;}
+.card .desc{font-size:12.5px;color:var(--mut);margin:0 0 10px;}
+.chart{width:100%;height:400px;}
+.modebar{display:flex;gap:8px;margin:6px 0 10px;}
+.modebtn{padding:6px 16px;border-radius:14px;border:1px solid var(--bd);background:#fff;cursor:pointer;font-size:12.5px;font-weight:600;color:#374151;}
+.modebtn.active{background:#6366f1;color:#fff;border-color:#6366f1;}
+.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px;}
+.ctab{padding:5px 13px;border-radius:13px;border:1px solid var(--bd);background:#fff;cursor:pointer;font-size:12px;color:#374151;}
+.ctab.active{background:#10b981;color:#fff;border-color:#10b981;}
+.note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#1d4ed8;margin:12px 0;}
+.muted{color:var(--mut);font-size:12px;}
+.prodtable{width:100%;border-collapse:collapse;font-size:12.5px;}
+.prodtable th{background:#f8fafc;font-size:11.5px;color:#374151;padding:7px 9px;text-align:left;border-bottom:1px solid var(--bd);}
+.prodtable td{padding:7px 9px;border-bottom:1px solid var(--bd);vertical-align:top;}
+.prodtable .catcell{white-space:nowrap;}
+.prod{display:inline-block;background:#f1f5f9;border-radius:6px;padding:2px 8px;margin:2px 4px 2px 0;font-size:11.5px;color:#334155;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>海内外游戏玩法品类趋势</h1>
+      <div class="sub">用户总量趋势 · 付费总量趋势 · 地区 × 品类 × 时间</div>
+    </div>
+    <span class="badge" id="flag">框架演示 · 示例数据</span>
+  </div>
+
+  <div class="note">
+    这是<b>框架</b>：<b>示例数据</b>仅用于演示交互与排版（标注黄色徽标）。真实数据接入后，替换 <code>FRAMEWORK_DATA</code> 即可。
+    两块核心看板：<b>① 用户总量趋势</b>　<b>② 付费总量趋势</b>，均按「地区 × 品类」交叉展开，时间轴逐月积累。
+  </div>
+
+  <!-- 地区切换 -->
+  <div class="tabs" id="regionTabs"></div>
+
+  <!-- ① 用户总量：全品类多线 -->
+  <div class="card">
+    <h2>用户总量趋势 · 全品类</h2>
+    <p class="desc">当前地区 · 12 品类每月用户总量（万）。品类作为图例可点选显隐。</p>
+    <div class="chart" id="chartUsers"></div>
+  </div>
+
+  <!-- ② 付费总量：全品类多线 -->
+  <div class="card">
+    <h2>付费总量趋势 · 全品类</h2>
+    <p class="desc">当前地区 · 12 品类每月付费总量（亿元）。品类作为图例可点选显隐。</p>
+    <div class="chart" id="chartPays"></div>
+  </div>
+
+  <!-- ③ 单品类 × 地区对比 -->
+  <div class="card">
+    <h2>单品类 · 分地区对比</h2>
+    <p class="desc">选一个品类，看它在 5 个地区之间的用户/付费趋势对比（点按钮切换用户/付费）。</p>
+    <div class="modebar">
+      <span class="modebtn active" id="detailUsers" onclick="detailMode='users';renderDetail();">用户总量</span>
+      <span class="modebtn" id="detailPays" onclick="detailMode='pays';renderDetail();">付费总量</span>
+    </div>
+    <div class="ctabs" id="detailCatTabs"></div>
+    <div class="chart" id="chartDetail"></div>
+  </div>
+
+  <!-- ④ 各地区各品类代表产品 -->
+  <div class="card">
+    <h2>各地区各品类 · 代表产品</h2>
+    <p class="desc">按「品类 × 地区」交叉矩阵列出代表产品。接入真实数据后，替换 render_framework.js 中的 CAT_PRODUCTS。</p>
+    <div id="prodTableWrap"></div>
+  </div>
+
+</div>
+<script src="vendor/echarts.min.js"></script>
+<script src="render_framework.js"></script>
+</body>
+</html>
